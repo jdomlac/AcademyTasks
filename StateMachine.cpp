@@ -53,7 +53,7 @@ The following matrix is what is known as the accesibility matrix of a directed g
 which represents the "Figure 21" as a graph. (See rules named at the header of the file)
 
 When consulting this matrix this should be done like: [currState][desiredState] the returned
-value will be 1 for accesible state and 0 for those who are not accesible. More info on the report of the task.
+value will be 1 for accesible state and 0 for those who are not accesible.
 */
 const bool stateMatrix[statesNum][statesNum]{
                  {1,1,0,0,0,1},
@@ -92,7 +92,7 @@ bool TS = TS_OFF;               //Initial state of the tractive system must be o
 bool R2D = R2D_OFF;             //Initial state of the "Ready to drive" must be off
 bool SA = SA_UNAVAILABLE;       //Initial state of the steering actuation must be unavailable
 short SB = SB_UNAVAILABLE;      //Initial state of the service brake must be unavailable
-short EBS = EBS_UNAVAILABLE;    //Actually, the initial state of the EBS doesn't care
+short EBS = EBS_UNAVAILABLE;    //Actually, the initial state of the EBS doesn't matter
 
 //OtherFlags (This aren't updated by this code in any moment)
 bool goSignal = false;
@@ -165,18 +165,18 @@ void main() {
 
         case AS_OFF:
             if(AutonomousMissionSelected && EBS == EBS_ARMED && ASMS && TS == TS_ON) { stateMachine(AS_READY); }
-            if(ManualMissionSelected && EBS == EBS_UNAVAILABLE && !ASMS && TS == TS_ON) { stateMachine(MANUAL_DRIVE); }
+            else if(ManualMissionSelected && EBS == EBS_UNAVAILABLE && !ASMS && TS == TS_ON) { stateMachine(MANUAL_DRIVE); }
             break;
         
         case AS_READY:
             if(!ASMS && Brakes == BRAKES_RELEASED) { stateMachine(AS_OFF); }
-            if(EBS == EBS_ACTIVATED) { stateMachine(AS_EMERGENCY); }
-            if(goSignal && (delay >= 5)) { stateMachine(AS_DRIVING); }
+            else if(EBS == EBS_ACTIVATED) { stateMachine(AS_EMERGENCY); }
+            else if(goSignal && (delay >= 5)) { stateMachine(AS_DRIVING); }
             break;
 
         case AS_DRIVING:
             if(EBS == EBS_ACTIVATED) { stateMachine(AS_EMERGENCY); }
-            if(MissionFinished && speed == 0) { stateMachine(AS_FINISHED); }
+            else if(MissionFinished && speed == 0) { stateMachine(AS_FINISHED); }
             break;
         
         case AS_EMERGENCY:
@@ -185,7 +185,7 @@ void main() {
 
         case AS_FINISHED:
             if(RESTriggered) { stateMachine(AS_EMERGENCY); }
-            if(!ASMS && Brakes == BRAKES_RELEASED) { stateMachine(AS_OFF); }
+            else if(!ASMS && Brakes == BRAKES_RELEASED) { stateMachine(AS_OFF); }
             break;
         
         case MANUAL_DRIVE:
